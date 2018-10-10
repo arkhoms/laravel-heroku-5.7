@@ -1,10 +1,25 @@
 <?php
 
-$db = collect(($db = collect(['DATABASE_URL', 'CLEARDB_DATABASE_URL', 'JAWSDB_URL'])
-    ->map(function ($value) {
-        return parse_url(getenv($value));
-    }))->firstWhere('host', '!=', false))
-    ->put('database', substr($db->get('path'), 1));
+function getHerokuEnv($key, $default)
+{
+    $db = collect(($db = collect(['DATABASE_URL', 'CLEARDB_DATABASE_URL', 'JAWSDB_URL'])
+        ->map(function ($value) {
+            return parse_url(getenv($value));
+        }))->firstWhere('host', '!=', false))
+        ->put('database', substr($db->get('path'), 1))
+        ->mapWithKeys(function ($value, $key) {
+            $keys = [
+                'scheme' => 'DB_CONNECTION',
+                'host' => 'DB_HOST',
+                'port' => 'DB_PORT',
+                'database' => 'DB_DATABASE',
+                'user' => 'DB_USERNAME',
+                'pass' => 'DB_PASSWORD',
+            ];
+        });
+
+    return env($key, $db->get($key, $default));
+}
 
 return [
 
@@ -19,7 +34,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', $db->get('scheme', 'mysql')),
+    'default' => env('DB_CONNECTION', 'mysql'),
 
     /*
     |--------------------------------------------------------------------------
@@ -47,11 +62,11 @@ return [
 
         'mysql' => [
             'driver' => 'mysql',
-            'host' => env('DB_HOST', $db->get('host', '127.0.0.1')),
-            'port' => env('DB_PORT', $db->get('port', '3306')),
-            'database' => env('DB_DATABASE', $db->get('database', 'forge')),
-            'username' => env('DB_USERNAME', $db->get('username', 'forge')),
-            'password' => env('DB_PASSWORD', $db->get('pass', '')),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('DB_DATABASE', 'forge'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
