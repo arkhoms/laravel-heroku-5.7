@@ -1,5 +1,14 @@
 <?php
 
+if ($db = getenv("CLEARDB_DATABASE_URL")) {
+    $db = collect(parse_url($db))
+        ->put('database', substr($db->path, 1));
+} else {
+    $db = collect();
+}
+
+dd($db);
+
 return [
 
     /*
