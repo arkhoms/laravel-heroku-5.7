@@ -1,26 +1,5 @@
 <?php
 
-function getHerokuEnv($key, $default)
-{
-    $db = collect(($db = collect(['DATABASE_URL', 'CLEARDB_DATABASE_URL', 'JAWSDB_URL'])
-        ->map(function ($value) {
-            return parse_url(getenv($value));
-        }))->firstWhere('host', '!=', false))
-        ->put('database', substr($db->get('path'), 1))
-        ->mapWithKeys(function ($value, $key) {
-            $keys = [
-                'scheme' => 'DB_CONNECTION',
-                'host' => 'DB_HOST',
-                'port' => 'DB_PORT',
-                'database' => 'DB_DATABASE',
-                'user' => 'DB_USERNAME',
-                'pass' => 'DB_PASSWORD',
-            ];
-        });
-
-    return env($key, $db->get($key, $default));
-}
-
 return [
 
     /*
