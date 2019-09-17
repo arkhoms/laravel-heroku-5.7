@@ -15,6 +15,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('arkhom', function () {
+    return "อาคม";
+});
+
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
